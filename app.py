@@ -12,7 +12,7 @@ db = mysql.connector.connect(
 )
 
 cursor = db.cursor(dictionary=True)  
-app.config["SECRET_KEY"] = "your_secret_key"
+app.config["SECRET_KEY"] = ""
 
 bootstrap = Bootstrap5(app)
 @app.route("/home")
@@ -102,6 +102,8 @@ def view_post(id):
     cursor.execute("SELECT * FROM posts WHERE id = %s", (id,))
     post = cursor.fetchone()
     return render_template("view_post.html", post=post)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -22,13 +22,13 @@ def home():
     return render_template("home.html", profiles=profiles)
 
 @app.route("/view/<int:id>")
-def profile(id):
+def view_profile(id):
     cursor.execute("SELECT * FROM profiles WHERE id = %s", (id,))
     profile = cursor.fetchone()
     return render_template("profile.html", profile=profile)
 
 @app.route("/create_account", methods=["GET", "POST"])
-def create():
+def create_account():
     if request.method == "POST":
         firstname = request.form["firstname"]
         lastname = request.form["lastname"]
@@ -40,14 +40,14 @@ def create():
             "INSERT INTO profiles (firstname, lastname, username, password) VALUES (%s, %s, %s, %s)",
             (firstname, lastname, username, password),
         )
-        db.commit()  # Save changes
+        db.commit()
         flash(f"{username} added successfully")
         return redirect(url_for("home"))
 
     return render_template("create.html")
 
 @app.route("/update_account/<int:id>", methods=["GET", "POST"])
-def update(id):
+def update_account(id):
     cursor.execute("SELECT * FROM profiles WHERE id = %s", (id,))
     profile = cursor.fetchone()
 
@@ -66,7 +66,7 @@ def update(id):
     return render_template("update.html", profile=profile)
 
 @app.route("/delete_account/<int:id>")
-def remove(id):
+def delete_account(id):
     cursor.execute("DELETE FROM profiles WHERE id = %s", (id,))
     db.commit()
     flash("Deleted successfully")

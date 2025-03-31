@@ -8,6 +8,11 @@
     {{ bootstrap.load_css() }}
 </head>
 <body>
+    {% extends "base/header-nav.html" %}
+
     {% block content %} {% endblock %}
+
+
+    {% block javascripts %}{% endblock %}
 </body>
 </html>

@@ -1,10 +1,5 @@
 {% extends "base/layout.html" %}
 {% block title %} home {% endblock %}
-{% block content %}
-
-{% extends "layouts/base.html" %}
-
-{% block title %} Dashboard {% endblock %} 
 
 <!-- Element injected in the BODY element -->
 {% block body_class %} sidebar-mini {% endblock body_class %} 
@@ -121,14 +116,9 @@
               <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
           </div>
-          <!-- ./col -->
         </div>
-        <!-- /.row -->
-        <!-- Main row -->
         <div class="row">
-          <!-- Left col -->
           <section class="col-lg-7 connectedSortable">
-            <!-- Custom tabs (Charts with tabs)-->
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">
@@ -684,6 +674,3 @@
   <script src="/static/assets/js/demo.js"></script>
 
 {% endblock javascripts %}
-
-
-{% endblock %}

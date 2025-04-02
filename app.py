@@ -15,9 +15,9 @@ cursor = db.cursor(dictionary=True)
 app.config["SECRET_KEY"] = ""
 
 bootstrap = Bootstrap5(app)
-@app.route("/home")
+@app.route("/")
 def home():
-    cursor.execute("SELECT * FROM profiles")
+    cursor.execute("SELECT * FROM tbl_profile")
     profiles = cursor.fetchall()
     return render_template("home.html", profiles=profiles)
 

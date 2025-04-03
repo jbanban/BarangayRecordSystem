@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, flash
+from flask import Flask, render_template, url_for, redirect, request,session, flash
 from flask_bootstrap import Bootstrap5
 import mysql.connector
 
@@ -11,15 +11,18 @@ db = mysql.connector.connect(
     database="barangayrecordsystem"
 )
 
-cursor = db.cursor(dictionary=True)  
 app.config["SECRET_KEY"] = ""
+
+
+cursor = db.cursor(dictionary=True)  
+
 
 bootstrap = Bootstrap5(app)
 @app.route("/")
 def home():
     cursor.execute("SELECT * FROM tbl_profile")
     profiles = cursor.fetchall()
-    return render_template("home.html", profiles=profiles)
+    return render_template("home/home.html", profiles=profiles)
 
 @app.route("/view/<int:id>")
 def view_profile(id):
@@ -103,6 +106,11 @@ def view_post(id):
     post = cursor.fetchone()
     return render_template("view_post.html", post=post)
 
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    flash("You have been logged out.", "info")
+    return redirect(url_for('login'))
 
 
 if __name__ == "__main__":

@@ -118,9 +118,9 @@
                 </div>
                 <div class="col-lg-5 ms-auto text-center mt-5 mt-lg-0">
                   <div class="bg-white border-radius-lg h-100">
-                    <img src="{{ config.ASSETS_ROOT }}/img/shapes/waves-white.svg" class="position-absolute h-100 w-50 top-0 d-lg-block d-none" alt="waves">
+                    <img src="{{ url_for('static', filename='/img/shapes/waves-white.svg') }}" class="position-absolute h-100 w-50 top-0 d-lg-block d-none" alt="waves">
                     <div class="position-relative d-flex align-items-center justify-content-center h-100">
-                      <img class="w-100 position-relative z-index-2 pt-4" src="{{ config.ASSETS_ROOT }}/img/illustrations/health.png" alt="health">
+                      <img class="w-100 h-100 position-relative z-index-2 pt-4" src="{{ url_for('static', filename='/img/illustrations/health.png') }}"/><!-- {{ config.ASSETS_ROOT }}/img/illustrations/health.png" alt="health">-->
                     </div>
                   </div>
                 </div>
@@ -128,7 +128,7 @@
             </div>
           </div>
         </div>
-        <!-- <div class="col-lg-5">
+        <div class="col-lg-5">
           <div class="card h-100 p-3">
             <div class="overflow-hidden position-relative border-radius-lg bg-cover h-100" style="background-image: url('{{ config.ASSETS_ROOT }}/img/ivancik.jpg');">
               <span class="mask bg-gradient-dark"></span>
@@ -142,7 +142,7 @@
               </div>
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
 
       <div class="row mt-4">
@@ -635,7 +635,7 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 
-  <script src="{{ config.ASSETS_ROOT }}/js/plugins/chartjs.min.js"></script>
+  <script src="{{ url_for('static', filename='js/plugins/chartjs.min.js')}}"></script>
   <script>
     var ctx = document.getElementById("chart-bars").getContext("2d");
 

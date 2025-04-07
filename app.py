@@ -1,28 +1,115 @@
-from flask import Flask, render_template, url_for, redirect, request,session, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_bootstrap import Bootstrap5
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
 app = Flask(__name__)
+Bootstrap5(app)
 
+#database connection
 db = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
     database="barangayrecordsystem"
 )
-
-app.config["SECRET_KEY"] = ""
-
+app.secret_key = 'InformationManagementSystem' 
 
 cursor = db.cursor(dictionary=True)  
 
+class User(UserMixin):
+    def __init__(self, id, username, password, email):
+        self.id = id
+        self.username = username
+        self.password = password
+        self.email = email
 
-bootstrap = Bootstrap5(app)
-@app.route("/")
+
+#initializing login manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+#fething user from datebase
+@login_manager.user_loader
+def load_user(user_id):
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+    if user:
+        return User(id=user['id'], username=user['username'], password=user['password'], email=user['email'])
+    return None
+
+
+@app.route('/')
+@login_required
 def home():
     cursor.execute("SELECT * FROM tbl_profile")
     profiles = cursor.fetchall()
-    return render_template("home/home.html", profiles=profiles)
+    return render_template('home/home.html', profiles=profiles, user=current_user)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        # Check if username already exists
+        cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
+        user = cursor.fetchone()
+        
+        if user:
+            flash('Username is already taken.', 'danger')
+            return redirect(url_for('register'))
+
+        # Check if email already exists
+        cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
+        existing_email = cursor.fetchone()
+
+        if existing_email:
+            flash('Email is already registered.', 'danger')
+            return redirect(url_for('register'))
+
+        # Hash the password
+        hashed_password = generate_password_hash(password)
+
+        # Insert new user into the database
+        cursor.execute('INSERT INTO users (username, email, password) VALUES (%s, %s, %s)', (username, email, hashed_password))
+        db.commit()
+
+        flash('Registration successful! Please log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html', msg=None, success=False)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+
+        if user and check_password_hash(user['password'], password):
+            user_obj = User(id=user['id'], username=user['username'], password=user['password'], email=user['email'])
+            login_user(user_obj)
+            flash("Logged in successfully!", "success")
+            return redirect(url_for('home'))
+
+        flash("Invalid credentials.", "danger")
+        return redirect(url_for('login'))
+
+    return render_template('login.html')
+
+@app.route("/table")
+def table():
+    cursor.execute("SELECT * FROM tbl_profile, tbl_purok, tbl_household")
+    profiles = cursor.fetchall()
+    return render_template("home/tables.html", profiles=profiles)
 
 @app.route("/view/<int:id>")
 def view_profile(id):
@@ -107,8 +194,9 @@ def view_post(id):
     return render_template("view_post.html", post=post)
 
 @app.route('/logout')
+@login_required
 def logout():
-    session.pop('user_id', None)
+    logout_user()
     flash("You have been logged out.", "info")
     return redirect(url_for('login'))
 

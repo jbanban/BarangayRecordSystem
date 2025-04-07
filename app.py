@@ -117,24 +117,13 @@ def view_profile(id):
     profile = cursor.fetchone()
     return render_template("profile.html", profile=profile)
 
-@app.route("/create_account", methods=["GET", "POST"])
-def create_account():
-    if request.method == "POST":
-        firstname = request.form["firstname"]
-        lastname = request.form["lastname"]
-        username = request.form["username"]
-        password = request.form["password"]
-        
-        # Insert new profile
-        cursor.execute(
-            "INSERT INTO profiles (firstname, lastname, username, password) VALUES (%s, %s, %s, %s)",
-            (firstname, lastname, username, password),
-        )
-        db.commit()
-        flash(f"{username} added successfully")
-        return redirect(url_for("home"))
+@app.route("/profile")
+@login_required
+def profile():
+    cursor.execute("SELECT * FROM users WHERE id = %s", (current_user.id,))
+    user_data = cursor.fetchone()
 
-    return render_template("create.html")
+    return render_template("profile.html", user=user_data)
 
 @app.route("/update_account/<int:id>", methods=["GET", "POST"])
 def update_account(id):

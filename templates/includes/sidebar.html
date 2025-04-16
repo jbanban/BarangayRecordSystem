@@ -30,7 +30,7 @@
           </a>
         </li>
         
-        {% if API_GENERATOR %}
+        <!-- {% if API_GENERATOR %}
         <li class="nav-item">
           <a class="nav-link {% if 'api-view' in segment %} active {% endif %}" href="/api-view.html">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -52,7 +52,7 @@
             <span class="nav-link-text ms-1">API View</span>
           </a>
         </li> 
-        {% endif %}
+        {% endif %} -->
         
         <li class="nav-item">
           <a class="nav-link {% if 'tables' in segment %} active {% endif %}" href="{{ url_for ('table')}}">
@@ -74,11 +74,11 @@
             <span class="nav-link-text ms-1">Tables</span>
           </a>
         </li>
-        <!-- <li class="nav-item">
-          <a class="nav-link {% if 'billing' in segment %} active {% endif %}" href="/billing.html">
+        <li class="nav-item">
+          <a class="nav-link {% if 'billing' in segment %} active {% endif %}" href="{{ url_for ('addpeople')}}">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-              <svg width="12px" height="12px" viewBox="0 0 43 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                <title>credit-card</title>
+              <svg width="12px" height="12px" viewBox="0 0 43 36" href="{{ url_for ('static', filename='img/addpeople.png')}}">
+                <title>add people</title>
                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                   <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
                     <g transform="translate(1716.000000, 291.000000)">
@@ -91,9 +91,9 @@
                 </g>
               </svg>
             </div>
-            <span class="nav-link-text ms-1">Billing</span>
+            <span class="nav-link-text ms-1">Add People</span>
           </a>
-        </li> -->
+        </li>
         <!-- <li class="nav-item">
           <a class="nav-link {% if 'rtl' in segment %} active {% endif %}" href="/rtl.html">
             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">

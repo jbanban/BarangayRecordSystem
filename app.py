@@ -109,7 +109,15 @@ def login():
 def table():
     cursor.execute("SELECT * FROM tbl_profile, tbl_purok, tbl_household")
     profiles = cursor.fetchall()
-    return render_template("home/tables.html", profiles=profiles)
+    cursor.execute("""
+                    SELECT tbl_purok.purokID FROM tbl_purok 
+                    INNER JOIN tbl_population ON tbl_purok.purokID = tbl_population.purokID
+                    INNER JOIN tbl_profile ON tbl_population.populationID = tbl_profile.populationID
+                    """)
+    puroks = cursor.fetchall()
+    return render_template("home/tables.html",
+                           profiles=profiles,
+                           puroks=puroks)
 
 @app.route("/view/<int:id>")
 def view_profile(id):
@@ -150,6 +158,31 @@ def delete_account(id):
     db.commit()
     flash("Deleted successfully")
     return redirect(url_for("home"))
+
+@app.route("/addpeople", methods=["GET", "POST"])
+def addpeople():
+    if request.method == "POST":
+        firstname = request.form["firstname"]
+        lastname = request.form["lastname"]
+        age = request.form["age"]
+        gender = request.form["gender"]
+        purok = request.form["purok"]
+        barangay = request.form["barangay"]
+        city = request.form["city"]
+        province = request.form["province"]
+        contact = request.form["contact"]
+        email = request.form["email"]
+        password = request.form["password"]
+
+        cursor.execute(
+            "INSERT INTO profiles (firstname, lastname, age, gender, purok, barangay, city, province, contact, email, password) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (firstname, lastname, age, gender, purok, barangay, city, province, contact, email, password),
+        )
+        db.commit()
+        flash("Added a person successfully")
+        return redirect(url_for("home"))
+
+    return render_template("home/addpeople.html")
 
 @app.route("/create_post/<int:id>", methods=["GET", "POST"])
 def create_post(id):

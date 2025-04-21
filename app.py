@@ -1,11 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
 app = Flask(__name__)
-Bootstrap5(app)
 
 #database connection
 db = mysql.connector.connect(
@@ -164,19 +162,27 @@ def addpeople():
     if request.method == "POST":
         firstname = request.form["firstname"]
         lastname = request.form["lastname"]
+        middlename = request.form["middlename"]
         age = request.form["age"]
+        sex = request.form["sex"]
+        bloodtype = request.form["bloodtype"]
+        height = request.form["height"]
+        weight = request.form["weight"]
         gender = request.form["gender"]
-        purok = request.form["purok"]
-        barangay = request.form["barangay"]
-        city = request.form["city"]
-        province = request.form["province"]
-        contact = request.form["contact"]
+        dateofBirth = request.form["dateofBirth"]
+        placeofBirth = request.form["placeofBirth"]
+        civilStatus = request.form["civilStatus"]
+        nationality = request.form["nationality"]
+        religion = request.form["religion"]
+        educationLevel = request.form["educationLevel"]
+        voterStatus = request.form["voterStatus"]
+        occupation = request.form["occupation"]
+        contactNumber = request.form["contactNumber"]
         email = request.form["email"]
-        password = request.form["password"]
 
         cursor.execute(
-            "INSERT INTO profiles (firstname, lastname, age, gender, purok, barangay, city, province, contact, email, password) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (firstname, lastname, age, gender, purok, barangay, city, province, contact, email, password),
+            "INSERT INTO tbl_profile (firstname, lastname, middlename, age, sex, bloodtype, height, weight, gender, dateofBirth, placeofBirth, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (firstname, lastname, middlename, age, sex, bloodtype, height, weight, gender, dateofBirth, placeofBirth, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email),
         )
         db.commit()
         flash("Added a person successfully")

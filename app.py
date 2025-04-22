@@ -159,6 +159,9 @@ def delete_account(id):
 
 @app.route("/addpeople", methods=["GET", "POST"])
 def addpeople():
+    cursor.execute("SELECT * FROM tbl_profile, tbl_purok, tbl_household")
+    profile = cursor.fetchall()
+
     if request.method == "POST":
         firstname = request.form["firstname"]
         lastname = request.form["lastname"]
@@ -188,7 +191,7 @@ def addpeople():
         flash("Added a person successfully")
         return redirect(url_for("home"))
 
-    return render_template("home/addpeople.html")
+    return render_template("home/addpeople.html", profile=profile)
 
 @app.route("/create_post/<int:id>", methods=["GET", "POST"])
 def create_post(id):

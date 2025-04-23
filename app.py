@@ -53,6 +53,7 @@ def register():
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
+        role = request.form['role']
 
         # Check if username already exists
         cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
@@ -74,11 +75,11 @@ def register():
         hashed_password = generate_password_hash(password)
 
         # Insert new user into the database
-        cursor.execute('INSERT INTO users (username, email, password) VALUES (%s, %s, %s)', (username, email, hashed_password))
+        cursor.execute('INSERT INTO tbl_account (username, email, password, role) VALUES (%s, %s, %s, %s)', (username, email, hashed_password, role))
         db.commit()
 
         flash('Registration successful! Please log in.', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('register'))
 
     return render_template('register.html', msg=None, success=False)
 
@@ -223,6 +224,20 @@ def view_post(id):
     cursor.execute("SELECT * FROM posts WHERE id = %s", (id,))
     post = cursor.fetchone()
     return render_template("view_post.html", post=post)
+
+@app.route("/update_purok")
+def update_purok():
+    pass
+    return render_template("update_purok.html")
+
+@app.route("/household")
+def household():
+    pass
+    return render_template("household.html")
+
+@app.route("/settings")
+def settings():
+    return render_template("home/settings.html")
 
 @app.route('/logout')
 @login_required

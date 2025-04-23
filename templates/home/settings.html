@@ -1,0 +1,50 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Billing {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <main class="main-content  mt-0">
+        <section>
+            <div class="page-header min-vh-75">
+                <div class="container">
+                    <div class="row">
+                        <div class="card card-plain mt-2" >
+                            <div class="card-header pb-0 text-left bg-transparent">
+                                <h3 class="font-weight-bolder text-info text-gradient">
+                                    SETTINGS
+                                </h3>
+                                <hr class="horizontal dark mt-0">
+                            <div class="col-8 d-flex align-items-center">
+                                <p class="col-lg-6">Purok Records</p>
+                                <div class="col-lg-4 text-end w-100 mt-4 mb-0">
+                                    <a href="{{ url_for('update_purok') }}"><button type="button" class="btn bg-gradient-info w-35">Go to Purok Records</button"></a>
+                                </div>
+                            </div>
+                            <hr class="horizontal dark mt-0">
+                            <div class="col-8 d-flex align-items-center">
+                                <p class="col-lg-6">Household Records</p>
+                                <div class="col-lg-4 text-end w-100 mt-4 mb-0">
+                                    <a href="{{ url_for('household') }}"><button type="button" class="btn bg-gradient-info w-35">Go to Household Records</button"></a>
+                                </div>
+                            </div>
+                            <hr class="horizontal dark mt-0">
+                            <div class="col-8 d-flex align-items-center">
+                                <p class="col-lg-6">Create Account</p>
+                                <div class="col-lg-4 text-end w-100 mt-4 mb-0">
+                                    <a href="{{ url_for('register') }}"><button type="button" class="btn bg-gradient-info w-35">Go to create account</button"></a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+{% endblock content %}
+                                

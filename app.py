@@ -32,12 +32,29 @@ login_manager.login_view = 'login'
 #fething user from datebase
 @login_manager.user_loader
 def load_user(user_id):
+    cursor.execute("SELECT * FROM admins WHERE id = %s", (user_id,))
+    admin = cursor.fetchone()
+    
+    if admin:
+        return User(
+            id=admin['id'],
+            username=admin['username'],
+            password=admin['password'],
+            email=admin['email']
+        )
     cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
     user = cursor.fetchone()
+    
     if user:
-        return User(id=user['id'], username=user['username'], password=user['password'], email=user['email'])
+        return User(
+            id=user['id'],
+            username=user['username'],
+            password=user['password'],
+            email=user['email'],
+            role=user['role']
+        )
+    
     return None
-
 
 @app.route('/')
 @login_required

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
@@ -16,6 +16,27 @@ app.secret_key = 'InformationManagementSystem'
 
 cursor = db.cursor(dictionary=True)  
 
+DATA = [f"Item {i}" for i in range(1, 51)]  # 50 items
+
+ITEMS_PER_PAGE = 5
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/get_data')
+def get_data():
+    page = int(request.args.get('page', 1))
+    start = (page - 1) * ITEMS_PER_PAGE
+    end = start + ITEMS_PER_PAGE
+    paginated_data = DATA[start:end]
+    total_pages = (len(DATA) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
+
+    return jsonify({
+        'items': paginated_data,
+        'total_pages': total_pages
+    })
+
 class User(UserMixin):
     def __init__(self, id, username, password, email):
         self.id = id
@@ -32,7 +53,7 @@ login_manager.login_view = 'login'
 #fething user from datebase
 @login_manager.user_loader
 def load_user(user_id):
-    cursor.execute("SELECT * FROM admins WHERE id = %s", (user_id,))
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
     admin = cursor.fetchone()
     
     if admin:
@@ -42,7 +63,7 @@ def load_user(user_id):
             password=admin['password'],
             email=admin['email']
         )
-    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    cursor.execute("SELECT * FROM tbl_profile WHERE accountID = %s", (user_id,))
     user = cursor.fetchone()
     
     if user:
@@ -73,7 +94,7 @@ def register():
         role = request.form['role']
 
         # Check if username already exists
-        cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
+        cursor.execute('SELECT * FROM tbl_account WHERE username = %s', (username,))
         user = cursor.fetchone()
         
         if user:
@@ -81,7 +102,7 @@ def register():
             return redirect(url_for('register'))
 
         # Check if email already exists
-        cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
+        cursor.execute('SELECT * FROM tbl_account WHERE email = %s', (email,))
         existing_email = cursor.fetchone()
 
         if existing_email:
@@ -144,10 +165,10 @@ def view_profile(id):
 @app.route("/profile")
 @login_required
 def profile():
-    cursor.execute("SELECT * FROM users WHERE id = %s", (current_user.id,))
+    cursor.execute("SELECT * FROM tbl_account WHERE accountID = %s", (current_user.id,))
     user_data = cursor.fetchone()
 
-    return render_template("profile.html", user=user_data)
+    return render_template("home/profile.html", user=user_data)
 
 @app.route("/update_account/<int:id>", methods=["GET", "POST"])
 def update_account(id):
@@ -249,8 +270,9 @@ def update_purok():
 
 @app.route("/household")
 def household():
-    pass
-    return render_template("household.html")
+    cursor.execute("SELECT * FROM tbl_household")
+    household = cursor.fetchall()
+    return render_template("home/household.html", household=household)
 
 @app.route("/settings")
 def settings():

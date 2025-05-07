@@ -20,10 +20,9 @@ DATA = [f"Item {i}" for i in range(1, 51)]  # 50 items
 
 ITEMS_PER_PAGE = 5
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
+
+ 
 @app.route('/get_data')
 def get_data():
     page = int(request.args.get('page', 1))

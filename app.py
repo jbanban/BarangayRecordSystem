@@ -10,7 +10,8 @@ db = mysql.connector.connect(
     host="localhost",
     user="root",
     password="",
-    database="barangayrecordsystem"
+    database="barangay_system",
+    consume_results=True
 )
 app.secret_key = 'InformationManagementSystem' 
 
@@ -22,6 +23,13 @@ ITEMS_PER_PAGE = 5
 
 
 
+class User(UserMixin):
+    def __init__(self, id, username, password, email=None, role=None):
+        self.id = id
+        self.username = username
+        self.password = password
+        self.email = email
+        self.role = role
  
 @app.route('/get_data')
 def get_data():
@@ -36,42 +44,33 @@ def get_data():
         'total_pages': total_pages
     })
 
-class User(UserMixin):
-    def __init__(self, id, username, password, email):
-        self.id = id
-        self.username = username
-        self.password = password
-        self.email = email
-
-
 #initializing login manager
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-#fething user from datebase
 @login_manager.user_loader
 def load_user(user_id):
-    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    cursor.execute("SELECT * FROM users WHERE userID = %s", (user_id,))
     admin = cursor.fetchone()
     
     if admin:
         return User(
-            id=admin['id'],
+            id=admin['userID'],
             username=admin['username'],
-            password=admin['password'],
-            email=admin['email']
+            password=admin['password']
         )
-    cursor.execute("SELECT * FROM tbl_profile WHERE accountID = %s", (user_id,))
+    
+    cursor.execute("SELECT * FROM tbl_account WHERE accountID = %s", (user_id,))
     user = cursor.fetchone()
     
     if user:
         return User(
-            id=user['id'],
+            id=user['accountID'], 
             username=user['username'],
             password=user['password'],
-            email=user['email'],
-            role=user['role']
+            email=user.get('email'),
+            role=user.get('role')
         )
     
     return None
@@ -91,6 +90,7 @@ def register():
         email = request.form['email']
         password = request.form['password']
         role = request.form['role']
+        profileID = request.form['profileID']
 
         # Check if username already exists
         cursor.execute('SELECT * FROM tbl_account WHERE username = %s', (username,))
@@ -112,13 +112,35 @@ def register():
         hashed_password = generate_password_hash(password)
 
         # Insert new user into the database
-        cursor.execute('INSERT INTO tbl_account (username, email, password, role) VALUES (%s, %s, %s, %s)', (username, email, hashed_password, role))
+        cursor.execute('INSERT INTO tbl_account (username, email, password, role, profileID) VALUES (%s, %s, %s, %s, %s)', (username, email, hashed_password, role, profileID))
         db.commit()
 
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('register'))
 
     return render_template('register.html', msg=None, success=False)
+@app.route('/create_admin', methods=['GET', 'POST'])
+def create_admin():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
+        user = cursor.fetchone()
+        
+        if user:
+            flash('Username is already taken.', 'danger')
+            return redirect(url_for('create_admin'))
+
+        hashed_password = generate_password_hash(password)
+
+        cursor.execute('INSERT INTO users (username, password ) VALUES (%s, %s)', (username, hashed_password))
+        db.commit()
+
+        flash('Administrator successful created!', 'success')
+        return redirect(url_for('create_admin'))
+
+    return render_template('create_admin.html', msg=None, success=False)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -131,7 +153,14 @@ def login():
         user = cursor.fetchone()
 
         if user and check_password_hash(user['password'], password):
-            user_obj = User(id=user['id'], username=user['username'], password=user['password'], email=user['email'])
+            user_obj = User(id=user['userID'], username=user['username'], password=user['password'])
+            login_user(user_obj)
+            flash("Logged in successfully!", "success")
+            return redirect(url_for('home'))
+        
+        cursor.execute("SELECT * FROM tbl_account WHERE username = %s", (username,)) 
+        if user and check_password_hash(user['password'], password):
+            user_obj = User(id=user['id'], username=user['username'], password=user['password'], email=user.get('email'), role=user.get('role'))
             login_user(user_obj)
             flash("Logged in successfully!", "success")
             return redirect(url_for('home'))
@@ -143,16 +172,9 @@ def login():
 
 @app.route("/table")
 def table():
-    cursor.execute("SELECT * FROM tbl_profile, tbl_purok, tbl_household")
-    profiles = cursor.fetchall()
-    cursor.execute("""
-                    SELECT tbl_purok.purokID FROM tbl_purok 
-                    INNER JOIN tbl_population ON tbl_purok.purokID = tbl_population.purokID
-                    INNER JOIN tbl_profile ON tbl_population.populationID = tbl_profile.populationID
-                    """)
+    cursor.execute(" SELECT * FROM tbl_purok ")
     puroks = cursor.fetchall()
     return render_template("home/tables.html",
-                           profiles=profiles,
                            puroks=puroks)
 
 @app.route("/view/<int:id>")
@@ -205,7 +227,6 @@ def addpeople():
         lastname = request.form["lastname"]
         middlename = request.form["middlename"]
         age = request.form["age"]
-        sex = request.form["sex"]
         bloodtype = request.form["bloodtype"]
         height = request.form["height"]
         weight = request.form["weight"]
@@ -222,8 +243,8 @@ def addpeople():
         email = request.form["email"]
 
         cursor.execute(
-            "INSERT INTO tbl_profile (firstname, lastname, middlename, age, sex, bloodtype, height, weight, gender, dateofBirth, placeofBirth, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (firstname, lastname, middlename, age, sex, bloodtype, height, weight, gender, dateofBirth, placeofBirth, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email),
+            "INSERT INTO tbl_profile (firstname, lastname, middlename, age, bloodtype, height, weight, gender, dateofBirth, placeofBirth, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (firstname, lastname, middlename, age, bloodtype, height, weight, gender, dateofBirth, placeofBirth, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email),
         )
         db.commit()
         flash("Added a person successfully")
@@ -267,6 +288,34 @@ def update_purok():
     pass
     return render_template("update_purok.html")
 
+@app.route("/purok", methods=["GET", "POST"])
+def purok():
+    cursor.execute("SELECT * FROM tbl_purok")
+    puroks = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM tbl_purok")
+    if request.method == "POST":
+        purokname = request.form["purokname"]
+        
+        cursor.execute("INSERT INTO tbl_purok (purokName) VALUES (%s)",(purokname,))
+        db.commit()
+
+        flash("Purok Created Successfully!")
+        return redirect(url_for("purok"))
+    return render_template("home/purok.html", puroks=puroks)
+
+@app.route("/purok_details/<int:id>")
+def purok_details(id):
+    cursor.execute("SELECT * FROM tbl_purok WHERE purokID = %s", (id,))
+    purok = cursor.fetchone()
+
+    cursor.execute("SELECT * FROM tbl_profile WHERE tbl_profile.purokID = %s", (id,))
+    profiles = cursor.fetchall()
+
+    return render_template("home/purok_details.html", 
+                           profiles=profiles, 
+                           purok=purok)
+
 @app.route("/household")
 def household():
     cursor.execute("SELECT * FROM tbl_household")
@@ -276,6 +325,13 @@ def household():
 @app.route("/settings")
 def settings():
     return render_template("home/settings.html")
+
+@app.route("/assign_account", methods=["GET", "POST"])
+def assign_account():
+    cursor.execute("SELECT profileID, lastname, firstname, middlename FROM tbl_profile")
+    profiles = cursor.fetchall() 
+
+    return render_template("assign_account.html", profiles=profiles)
 
 @app.route('/logout')
 @login_required

@@ -52,12 +52,12 @@
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ purok.id }}</h6><p class="text-xs text-secondary mb-0">{{ purok.name }}</p>
+                            <h6 class="mb-0 text-sm">{{ purok.purokID }}</h6><p class="text-xs text-secondary mb-0">{{ purok.purokName }}</p>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ purok.gender }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ purok.purokPopulation }}</p>
                       </td>
                       <td class="align-middle text-center text-sm">
                         <span class="badge badge-sm bg-gradient-secondary">Active</span>
@@ -66,19 +66,14 @@
                         <span class="text-secondary text-xs font-weight-bold">11/01/19</span>
                       </td>
                       <td class="align-middle">
-                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          Edit
+                        <a href="{{ url_for('purok_details', id=purok.purokID) }}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                          View
                         </a>
                       </td>
                     </tr>
                     {% endfor %}
                   </tbody>
                 </table>
-                <div class="pagination text-xs font-weight-bold mb-0">
-                  <button id="prev-btn">Previous</button>
-                  <span id="page-info"></span>
-                  <button id="next-btn">Next</button>
-                </div>
               </div>
             </div>
           </div>

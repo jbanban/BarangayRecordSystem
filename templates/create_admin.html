@@ -60,7 +60,7 @@
                     </div> 
                   </p>
                 {% else %}
-                  <form role="form text-left" method="post" action="{{ url_for('register') }}">
+                  <form role="form text-left" method="post" action="{{ url_for('create_admin') }}">
 
                     <!-- Flash Message if present -->
                     {% if msg %}
@@ -69,35 +69,15 @@
                     </div>
                     {% endif %}
                     
-                    <label for="account">Select an Account:</label>
-                    <div class="mb-3">
-                      <select class="form-control" name="profileID" id="profileID" size="auto" style="overflow-y: auto;">
-                        {% for profile in profiles %}
-                          <option value="{{ profile.accountID }}">{{ account.lastname }}, {{ account.firstname }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
                     <label for="username">Username</label>
                     <div class="mb-3">
                       <input type="text" name="username" class="form-control" placeholder="Username" required>
-                    </div>
-
-                    <label for="email">Email</label>
-                    <div class="mb-3">
-                      <input type="email" name="email" class="form-control" placeholder="Email" required>
                     </div>
 
                     <label for="password">Password</label>
                     <div class="mb-3">
                       <input type="password" name="password" class="form-control" placeholder="Password" required>
                     </div>
-
-                    <label for="role">Role</label>
-                    <select class="form-select" id="role" name="role" required>
-                      <option selected disabled>--select role--</option>
-                      <option>Manager</option>
-                      <option>Member</option>
-                    </select>
 
                     <div class="text-center">
                       <button type="submit" name="register" class="btn bg-gradient-dark w-100 my-4 mb-2">Sign UP</button>

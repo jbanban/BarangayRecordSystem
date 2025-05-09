@@ -12,8 +12,49 @@
             <div class="page-header min-vh-75">
                 <div class="container">
                     <div class="row">
-                        <div class="card card-plain mt-2 mx-3 col-7">
+                        <div class="card card-plain mt-2 mb-4 col-3 " >
                             <div class="card-header pb-0 text-left bg-transparent">
+                                <h3 class="font-weight-bolder text-info text-gradient">
+                                    Form
+                                </h3>
+                            </div>
+                            <div class="card-body row">
+                                <form role="form" method="post">
+                                    <div class="mb-3">
+                                        <label>Household Owner</label>
+                                        <div class="mb-3">
+                                            <input type="text" name="houseOwner" placeholder="Household Owner" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label>Block</label>
+                                            <div class="mb-3">
+                                                <input type="text" name="block" placeholder="blk 48" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="account">Select Purok:</label>
+                                        <div class="mb-3">
+                                        <select class="form-control" name="purokID" id="purokID" size="auto" style="overflow-y: auto;">
+                                            <option selected disabled>-- Select Purok --</option>
+                                            {% for purok in puroks %}
+                                            <option value="{{ purok.purokID }}">{{ purok.purokName }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        </div>
+                                        <label>Lot</label>
+                                        <div class="mb-3">
+                                            <input type="text" name="lot" placeholder="lot 5" class="form-control">
+                                        </div>
+                                        <div class="text-center">
+                                            <button type="submit" name="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card card-plain mt-2 col-lg-9 ">
+                            <div class="card-header text-left bg-transparent">
                                 <h3 class="font-weight-bolder text-info text-gradient">
                                     Household List
                                 </h3>
@@ -27,11 +68,11 @@
                                                 <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Purok Name</th>
                                                 <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Block</th>
                                                 <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Lot</th>
-                                                <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Lot</th>
+                                                <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for household in household %}
+                                            {% for household in households %}
                                             <tr class="text-center">
                                                 <td>
                                                     <div class="d-flex">
@@ -43,13 +84,27 @@
                                                 <td>
                                                     <div>
                                                         <div class="d-flex flex-column justify-content-center">
-                                                            <h6 class="mb-0 text-sm">{{ household.purokName }}</h6>
+                                                            <h6 class="mb-0 text-sm">{{ household.purokID }}</h6>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ household.block }}</h6>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ household.lot }}</h6>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="ms-auto">
-                                                        <a class="btn btn-link text-dark px-3 mb-0" href="{{ url_for('purok_details', id=purok.purokID) }}"><i class="fas fa-regular fa-eye me-2"></i>View</a>
+                                                        <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fas fa-regular fa-eye me-2"></i>View</a>
                                                         <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;"><i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a>
                                                     </div>
                                                 </td>
@@ -58,24 +113,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="card card-plain mt-2 col-4" >
-                            <div class="card-header pb-0 text-left bg-transparent">
-                                <h3 class="font-weight-bolder text-info text-gradient">
-                                    Form
-                                </h3>
-                            </div>
-                            <div class="card-body">
-                                <form role="form text-left" method="post" action="">
-                                    <label>Purok Name</label>
-                                    <div class="mb-3">
-                                        <input type="text" name="purokname" placeholder="Purok Name" class="form-control">
-                                    </div>
-                                    <div class="text-center">
-                                        <button type="submit" name="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Submit</button>
-                                    </div>
-                                </form>
                             </div>
                         </div>
                     </div>

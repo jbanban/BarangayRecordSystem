@@ -15,15 +15,17 @@
         <div class="col-12">
           <div class="card mb-4">
             <div class="card-header pb-0">
-              <h6>Purok List Table</h6>
+              <h6>Household List Table</h6>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Purok</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Population</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Household Owner</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Purok number</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">block</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">lot</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Active/Inactive</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Updated</th>
                       <th class="text-secondary opacity-7"></th>
@@ -48,16 +50,22 @@
                       </td>
                     </tr>
                     <tr>
-                      {% for purok in puroks %}
+                      {% for household in households %}
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ purok.purokName }}</h6><p class="text-xs text-secondary mb-0">Purok #{{ purok.purokID }}</p>
+                            <h6 class="mb-0 text-sm">{{ household.houseOwner }}</h6><p class="text-xs text-secondary mb-0">ID #: 00202500{{ household.houseID }}</p>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ purok.purokPopulation }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ household.purokID }}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ household.block }}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ household.lot }}</p>
                       </td>
                       <td class="align-middle text-center text-sm">
                         <span class="badge badge-sm bg-gradient-secondary">Active</span>
@@ -66,7 +74,7 @@
                         <span class="text-secondary text-xs font-weight-bold">11/01/19</span>
                       </td>
                       <td class="align-middle">
-                        <a href="{{ url_for('purok_details', id=purok.purokID) }}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
                           View
                         </a>
                       </td>

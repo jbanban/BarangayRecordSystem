@@ -170,8 +170,8 @@ def login():
 
     return render_template('login.html')
 
-@app.route("/table")
-def table():
+@app.route("/tables")
+def tables():
     cursor.execute(" SELECT * FROM tbl_purok ")
     puroks = cursor.fetchall()
     return render_template("home/tables.html",
@@ -219,8 +219,11 @@ def delete_account(id):
 
 @app.route("/addpeople", methods=["GET", "POST"])
 def addpeople():
-    cursor.execute("SELECT * FROM tbl_profile, tbl_purok, tbl_household")
-    profile = cursor.fetchall()
+    cursor.execute("SELECT * FROM tbl_household")
+    households = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM tbl_profile")
+    profiles = cursor.fetchall()
 
     if request.method == "POST":
         firstname = request.form["firstname"]
@@ -231,8 +234,8 @@ def addpeople():
         height = request.form["height"]
         weight = request.form["weight"]
         gender = request.form["gender"]
-        dateofBirth = request.form["dateofBirth"]
-        placeofBirth = request.form["placeofBirth"]
+        birthdate = request.form["dateofBirth"]
+        birthplace = request.form["placeofBirth"]
         civilStatus = request.form["civilStatus"]
         nationality = request.form["nationality"]
         religion = request.form["religion"]
@@ -241,16 +244,19 @@ def addpeople():
         occupation = request.form["occupation"]
         contactNumber = request.form["contactNumber"]
         email = request.form["email"]
+        houseID = request.form["houseID"]
 
         cursor.execute(
-            "INSERT INTO tbl_profile (firstname, lastname, middlename, age, bloodtype, height, weight, gender, dateofBirth, placeofBirth, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (firstname, lastname, middlename, age, bloodtype, height, weight, gender, dateofBirth, placeofBirth, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email),
+            "INSERT INTO tbl_profile (firstname, lastname, middlename, age, bloodtype, height, weight, gender, birthdate, birthplace, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email, houseID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (firstname, lastname, middlename, age, bloodtype, height, weight, gender, birthdate, birthplace, civilStatus, nationality, religion, educationLevel, voterStatus, occupation, contactNumber, email, houseID),
         )
         db.commit()
         flash("Added a person successfully")
-        return redirect(url_for("home"))
+        return redirect(url_for("addpeople"))
 
-    return render_template("home/addpeople.html", profile=profile)
+    return render_template("home/addpeople.html", 
+                           profiles=profiles, 
+                           households=households)
 
 @app.route("/create_post/<int:id>", methods=["GET", "POST"])
 def create_post(id):
@@ -316,11 +322,36 @@ def purok_details(id):
                            profiles=profiles, 
                            purok=purok)
 
-@app.route("/household")
-def household():
+@app.route("/households")
+def households():
     cursor.execute("SELECT * FROM tbl_household")
-    household = cursor.fetchall()
-    return render_template("home/household.html", household=household)
+    households = cursor.fetchall()
+    return render_template("home/households.html", households=households)
+
+@app.route("/household", methods=["GET", "POST"])
+def household():
+    cursor.execute("SELECT * FROM tbl_purok")
+    puroks = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM tbl_household")
+    households = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM tbl_household")
+    if request.method == "POST":
+        householdname = request.form["houseOwner"]
+        purokID = request.form["purokID"]
+        block = request.form["block"]
+        lot = request.form["lot"]
+        
+        cursor.execute("INSERT INTO tbl_household (houseOwner, purokID, block, lot) VALUES (%s, %s, %s, %s)",(householdname, purokID, block, lot))
+        db.commit()
+
+        flash("Household Created Successfully!")
+        return redirect(url_for("household"))
+
+    return render_template("home/household.html",
+                           households=households, 
+                           puroks=puroks)
 
 @app.route("/settings")
 def settings():

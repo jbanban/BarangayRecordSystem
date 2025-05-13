@@ -69,11 +69,11 @@
                     </div>
                     {% endif %}
                     
-                    <label for="account">Select an Account:</label>
+                    <label for="account">Create Account for</label>
                     <div class="mb-3">
                       <select class="form-control" name="profileID" id="profileID" size="auto" style="overflow-y: auto;">
                         {% for profile in profiles %}
-                          <option value="{{ profile.accountID }}">{{ account.lastname }}, {{ account.firstname }}</option>
+                          <option value="{{ profile.profileID }}">{{ profile.lastname }}, {{ profile.firstname }}</option>
                         {% endfor %}
                       </select>
                     </div>

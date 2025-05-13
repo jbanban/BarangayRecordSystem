@@ -30,19 +30,7 @@ class User(UserMixin):
         self.password = password
         self.email = email
         self.role = role
- 
-@app.route('/get_data')
-def get_data():
-    page = int(request.args.get('page', 1))
-    start = (page - 1) * ITEMS_PER_PAGE
-    end = start + ITEMS_PER_PAGE
-    paginated_data = DATA[start:end]
-    total_pages = (len(DATA) + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
 
-    return jsonify({
-        'items': paginated_data,
-        'total_pages': total_pages
-    })
 
 #initializing login manager
 login_manager = LoginManager()
@@ -85,6 +73,9 @@ def home():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    cursor.execute("SELECT * FROM tbl_profile")
+    profiles = cursor.fetchall()
+
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
@@ -118,7 +109,8 @@ def register():
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('register'))
 
-    return render_template('register.html', msg=None, success=False)
+    return render_template('register.html',profiles=profiles, msg=None, success=False)
+
 @app.route('/create_admin', methods=['GET', 'POST'])
 def create_admin():
     if request.method == 'POST':
@@ -159,8 +151,9 @@ def login():
             return redirect(url_for('home'))
         
         cursor.execute("SELECT * FROM tbl_account WHERE username = %s", (username,)) 
-        if user and check_password_hash(user['password'], password):
-            user_obj = User(id=user['id'], username=user['username'], password=user['password'], email=user.get('email'), role=user.get('role'))
+        account = cursor.fetchone()
+        if account and check_password_hash(account['password'], password):
+            user_obj = User(id=account['accountID'], username=account['username'], password=account['password'], email=account.get('email'), role=account.get('role'))
             login_user(user_obj)
             flash("Logged in successfully!", "success")
             return redirect(url_for('home'))

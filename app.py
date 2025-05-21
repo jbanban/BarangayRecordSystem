@@ -17,11 +17,6 @@ app.secret_key = 'InformationManagementSystem'
 
 cursor = db.cursor(dictionary=True)  
 
-DATA = [f"Item {i}" for i in range(1, 51)]  # 50 items
-
-ITEMS_PER_PAGE = 5
-
-
 
 class User(UserMixin):
     def __init__(self, id, username, password, email=None, role=None):
@@ -350,6 +345,34 @@ def household():
 def settings():
     return render_template("home/settings.html")
 
+@app.route("/people-list")
+def people_list():
+    cursor.execute("SELECT * FROM tbl_profile")
+    profiles = cursor.fetchall()
+    return render_template("home/people-list.html", profiles=profiles)
+
+@app.route("/search")
+def search():
+    q = request.args.get("q")
+
+    if q:
+        query = """
+            SELECT * FROM tbl_purok
+            WHERE purokName LIKE %s 
+            ORDER BY purokName ASC
+            LIMIT 20
+        """
+        param = (f"%{q}%", f"%{q}%")
+        cursor.execute(query, param)
+        results = cursor.fetchall()
+
+        cursor.close()
+
+    else:
+        results = []
+
+    return render_template("search_results.html", results=results)
+
 @app.route("/assign_account", methods=["GET", "POST"])
 def assign_account():
     cursor.execute("SELECT profileID, lastname, firstname, middlename FROM tbl_profile")
@@ -366,4 +389,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8080)

@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} Tables {% endblock title %}
+{% block title %} List of People {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
@@ -15,21 +15,22 @@
         <div class="col-12">
           <div class="card mb-4">
             <div class="card-header pb-0">
-              <h6>Purok List Table</h6>
+              <h6>List of People</h6>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
                 <table class="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Purok</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Total Population</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Active/Inactive</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Full Name</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Age</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Blood Type</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Gender</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">email</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Updated</th>
-                      <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
-                  <tbody id="results">
+                  <tbody>
                     <tr>
                       <td>
 
@@ -48,29 +49,32 @@
                       </td>
                     </tr>
                     <tr>
-                      {% for purok in puroks %}
+                      {% for profile in profiles %}
+                        {% if loop.index0 < 15 %}
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ purok.purokName }}</h6><p class="text-xs text-secondary mb-0">Purok #{{ purok.purokID }}</p>
+                            <h6 class="mb-0 text-sm">{{ profile.firstname }} {{ profile.lastname }}</h6><p class="text-xs text-secondary mb-0">Purok #{{ profile.purokID }}</p>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <p class="text-xs font-weight-bold mb-0">{{ purok.purokPopulation }}</p>
+                        <p class="text-xs font-weight-bold mb-0">{{ profile.age }}</p>
                       </td>
-                      <td class="align-middle text-center text-sm">
-                        <span class="badge badge-sm bg-gradient-secondary">Active</span>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ profile.bloodtype }}</p>
+                      </td>
+                      <td>
+                        <p class="text-xs font-weight-bold mb-0">{{ profile.gender }}</p>
+                      </td>
+                      <td class="text-left text-xs font-weight-bold mb-0">
+                        <span>{{ profile.email }}</span>
                       </td>
                       <td class="align-middle text-center">
                         <span class="text-secondary text-xs font-weight-bold">11/01/19</span>
                       </td>
-                      <td class="align-middle">
-                        <a href="{{ url_for('purok_details', id=purok.purokID) }}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          View
-                        </a>
-                      </td>
                     </tr>
+                      {% endif %}
                     {% endfor %}
                   </tbody>
                 </table>
